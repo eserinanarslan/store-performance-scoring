@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  rossman-api:
+    build: .
+    container_name: rossman-api
+    ports:
+      - "1001:1001"
+    volumes:
+      - ./outputs:/code/outputs
+    environment:
+      - PYTHONPATH=/code

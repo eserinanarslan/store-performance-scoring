@@ -1,0 +1,147 @@
+{
+  "info": {
+    "_postman_id": "c955aa72-f180-4669-965b-e5c787ce5fab",
+    "name": "Store Scoring API",
+    "description": "Store Performance Scoring API with dynamic store_id",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "1878453"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Store Summary",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/store/{{store_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "store",
+            "{{store_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Store Drivers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/store/{{store_id}}/drivers",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "store",
+            "{{store_id}}",
+            "drivers"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Top Stores",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/top-stores?limit=10",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "top-stores"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Worst Stores",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/worst-stores?limit=10",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "worst-stores"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Score Prediction",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"DayOfWeek\": 3,\n  \"Promo\": 1,\n  \"SchoolHoliday\": 0,\n  \"StoreType\": 1,\n  \"Assortment\": 2,\n  \"CompetitionDistance\": 500,\n  \"month\": 6,\n  \"year\": 2015,\n  \"is_weekend\": 0,\n  \"footfall\": 300,\n  \"conversion_rate\": 0.8,\n  \"staff_hours\": 12,\n  \"markdown_rate\": 0.2\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "score"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:1001"
+    },
+    {
+      "key": "store_id",
+      "value": "425"
+    }
+  ]
+}
