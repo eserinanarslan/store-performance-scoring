@@ -301,6 +301,8 @@ rossman_case/
 │
 ├── data/
 ├── outputs/
+├── notebooks/
+│   └── rossman_dataset.ipynb
 ├── src/
 │   └── main.py
 ├── api/
