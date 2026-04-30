@@ -16,10 +16,15 @@ from utils.plotter import Plotter
 from sklearn.model_selection import train_test_split
 
 import warnings
+
+# Suppress non-critical warnings for cleaner logs
 warnings.filterwarnings("ignore")
 
 
 def load_config():
+    """
+    Load service configuration from config.ini.
+    """
     config = configparser.ConfigParser()
     config_path = os.path.join(os.getcwd(), "config.ini")
 
@@ -33,6 +38,10 @@ def load_config():
 
 
 def run_pipeline():
+    """
+    Execute the full ML pipeline:
+    data loading → feature engineering → training → scoring → outputs.
+    """
     print("🚀 Starting data pipeline...")
 
     # =========================
@@ -50,6 +59,7 @@ def run_pipeline():
     fe = FeatureEngineer()
     train_df = fe.transform(train_df)
 
+    # Encode categorical variables
     cat_cols = ["StoreType", "Assortment", "StateHoliday"]
     train_df = fe.encode(train_df, cat_cols)
 
@@ -97,7 +107,7 @@ def run_pipeline():
     scorer = Scorer()
     train_df = scorer.score(train_df, model, features)
 
-    # Labels
+    # Assign performance labels based on score thresholds
     def classify(score):
         if score > 60:
             return "outperforming"
@@ -108,7 +118,7 @@ def run_pipeline():
 
     train_df["performance_label"] = train_df["score"].apply(classify)
 
-    # Trend
+    # Compute rolling trend per store
     train_df = train_df.sort_values(["Store", "Date"])
     train_df["rolling_score"] = train_df.groupby("Store")["score"].transform(
         lambda x: x.rolling(7).mean()
@@ -118,6 +128,8 @@ def run_pipeline():
     # 8. SAVE OUTPUT
     # =========================
     os.makedirs("outputs", exist_ok=True)
+
+    # Save scored dataset for further analysis
     train_df.to_csv("outputs/scored_data.csv", index=False)
     print("💾 Saved: outputs/scored_data.csv")
 
@@ -132,10 +144,12 @@ def run_pipeline():
     plotter.plot_label_distribution(train_df)
     plotter.plot_expected_vs_actual(train_df)
 
+    # Select worst-performing store for detailed analysis
     worst_store = train_df.groupby("Store")["score"].mean().idxmin()
     df_store = train_df[train_df["Store"] == worst_store]
 
     plotter.plot_store_trend(train_df, worst_store)
+
     plotter.plot_store_vs_global(
         df_store,
         train_df,
@@ -149,13 +163,20 @@ def run_pipeline():
 
 
 def main():
-    # Load config
+    """
+    Entry point:
+    - load configuration
+    - run pipeline
+    - start API service
+    """
+
+    # Load configuration
     host, port = load_config()
 
     # Run pipeline once at startup
     train_df, model, features = run_pipeline()
 
-    # Inject data into API layer
+    # Make data and model available to API
     set_data(train_df, model, features)
 
     print("🌐 Starting API...")

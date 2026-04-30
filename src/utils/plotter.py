@@ -5,21 +5,32 @@ import pandas as pd
 
 
 class Plotter:
+    """
+    Handles creation and saving of analysis visualizations.
+    """
 
     def __init__(self, output_dir="outputs"):
+        # Directory where plots will be saved
         self.output_dir = output_dir
         os.makedirs(self.output_dir, exist_ok=True)
 
     def _save(self, name):
+        """
+        Save the current plot as a PNG file.
+        """
         path = os.path.join(self.output_dir, f"{name}.png")
         plt.savefig(path, bbox_inches="tight")
         plt.close()
         print(f"📁 Saved: {path}")
 
     def plot_score_distribution(self, df):
-        plt.figure(figsize=(8,5))
+        """
+        Plot distribution of store scores with reference thresholds.
+        """
+        plt.figure(figsize=(8, 5))
         sns.histplot(df["score"], bins=50)
 
+        # Reference lines for interpretation
         plt.axvline(50, linestyle="--")
         plt.axvline(40, linestyle="--")
         plt.axvline(60, linestyle="--")
@@ -29,14 +40,21 @@ class Plotter:
         self._save("score_distribution")
 
     def plot_label_distribution(self, df):
-        plt.figure(figsize=(6,4))
+        """
+        Plot count of performance labels.
+        """
+        plt.figure(figsize=(6, 4))
         df["performance_label"].value_counts().plot(kind="bar")
+
         plt.title("Performance Labels")
 
         self._save("label_distribution")
 
     def plot_expected_vs_actual(self, df):
-        plt.figure(figsize=(8,6))
+        """
+        Compare expected vs actual sales, colored by performance label.
+        """
+        plt.figure(figsize=(8, 6))
 
         sns.scatterplot(
             x=df["expected_sales"],
@@ -45,6 +63,7 @@ class Plotter:
             alpha=0.3
         )
 
+        # Ideal prediction line
         max_val = df["Sales"].max()
         plt.plot([0, max_val], [0, max_val], linestyle="--")
 
@@ -53,9 +72,12 @@ class Plotter:
         self._save("expected_vs_actual")
 
     def plot_store_trend(self, df, store_id):
+        """
+        Plot rolling score trend for a specific store.
+        """
         store_data = df[df["Store"] == store_id]
 
-        plt.figure(figsize=(10,5))
+        plt.figure(figsize=(10, 5))
         plt.plot(store_data["Date"], store_data["rolling_score"])
 
         plt.title(f"Store {store_id} Trend")
@@ -63,6 +85,9 @@ class Plotter:
         self._save(f"store_{store_id}_trend")
 
     def plot_store_vs_global(self, df_store, df_global, features, store_id):
+        """
+        Compare store metrics against global averages.
+        """
         comp = pd.DataFrame({
             "Store": df_store[features].mean(),
             "Global": df_global[features].mean()
@@ -70,11 +95,12 @@ class Plotter:
 
         ax = comp.plot(kind="bar")
 
+        # Add values on top of bars
         for container in ax.containers:
             for bar in container:
                 height = bar.get_height()
                 ax.text(
-                    bar.get_x() + bar.get_width()/2,
+                    bar.get_x() + bar.get_width() / 2,
                     height,
                     f"{height:.2f}",
                     ha='center',
